@@ -53,7 +53,7 @@
                 <label class="form-check-label" for="rememberMe">Remember me</label>
               </div>
               
-              <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+              <button type="submit" class="btn btn-primary w-100 py-2 mb-3" :disabled="isLoading">
                 <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
                 Login
               </button>
@@ -70,6 +70,8 @@
 </template>
 
 <script>
+import api from '@/api/axiosInstance'; 
+
 export default {
   name: 'LoginComponent',
   data() {
@@ -79,46 +81,50 @@ export default {
       rememberMe: false,
       errorMessage: '',
       isLoading: false,
-      showPassword: false,
-      // Hardcoded credentials (to be replaced with backend implementation later)
-      validCredentials: [
-        { email: 'user@example.com', password: 'password123' },
-        { email: 'admin@gmail.com', password: 'admin' }
-      ]
+      showPassword: false
     }
   },
   methods: {
-    handleLogin() {
+    async handleLogin() {
       this.isLoading = true;
       this.errorMessage = '';
-      
-      // Simulate API call delay
-      setTimeout(() => {
-        const userFound = this.validCredentials.find(
-          user => user.email === this.email && user.password === this.password
-        );
-        
-        if (userFound) {
+
+      try {
+        const response = await api.post('/admin/login', {
+          email: this.email,
+          password: this.password
+        });
+
+        if (response.data.status === 'success') {
+          localStorage.setItem('token', response.data.data.token);
           localStorage.setItem('isAuthenticated', 'true');
+          
           if (this.rememberMe) {
             localStorage.setItem('userEmail', this.email);
+          } else {
+            localStorage.removeItem('userEmail');
           }
-          
-          // Redirect to dashboard
+
+          localStorage.setItem('adminData', JSON.stringify(response.data.data.admin));
           this.$router.push('/dashboard');
-        } else {
-          this.errorMessage = 'Invalid email or password. Please try again.';
         }
-        
+      } catch (error) {
+        if (error.response) {
+          this.errorMessage = error.response.data.message || 'Invalid email or password';
+        } else if (error.request) {
+          this.errorMessage = 'No response from server. Please try again later.';
+        } else {
+          this.errorMessage = 'An error occurred. Please try again.';
+        }
+      } finally {
         this.isLoading = false;
-      }, 1000);
+      }
     },
     togglePasswordVisibility() {
       this.showPassword = !this.showPassword;
     }
   },
   mounted() {
-    // Check if user has saved email (remember me feature)
     const savedEmail = localStorage.getItem('userEmail');
     if (savedEmail) {
       this.email = savedEmail;

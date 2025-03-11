@@ -21,7 +21,7 @@ class AdminLoginController extends Controller
         // Define validation rules
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
-            'password' => 'required|string|min:6',
+            'password' => 'required|string',
         ]);
 
         // Check if validation fails
