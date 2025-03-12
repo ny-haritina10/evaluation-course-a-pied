@@ -3,7 +3,7 @@
     <div class="sidebar-header d-flex align-items-center justify-content-between p-3">
       <div class="d-flex align-items-center">
         <i class="bi bi-grid-1x2-fill me-2"></i>
-        <span class="brand-name" v-if="!isCollapsed">Admin Panel</span>
+        <span class="brand-name" v-if="!isCollapsed">Equipe Panel</span>
       </div>
       <button class="btn btn-link text-white p-0" @click="toggleSidebar">
         <i class="bi" :class="isCollapsed ? 'bi-chevron-right' : 'bi-chevron-left'"></i>
@@ -88,10 +88,10 @@ export default {
           icon: 'bi-gear', 
           link: '#', 
           submenu: [
-            { name: 'Form', link: '/examples/static/form' },
-            { name: 'List', link: '/examples/static/list' },
-            { name: 'List Reservation', link: '/examples/api/list-reservation' },
-            { name: 'Form Reservation', link: '/examples/api/form-reservation' }
+            { name: 'Form', link: '#' },
+            { name: 'List', link: '#' },
+            { name: 'List Reservation', link: '#' },
+            { name: 'Form Reservation', link: '#' }
           ]
         }
       ]
@@ -123,7 +123,10 @@ export default {
     },
     logout() {
       localStorage.removeItem('isAuthenticated');
-      this.$router.push('/'); 
+      localStorage.removeItem('token');
+      localStorage.removeItem('adminData');
+
+      this.$router.push('/login'); 
     }
   }
 }
