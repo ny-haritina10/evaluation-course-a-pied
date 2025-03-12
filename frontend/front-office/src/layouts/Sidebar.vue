@@ -43,11 +43,11 @@
     <div class="sidebar-footer mt-auto p-3" v-if="!isCollapsed">
       <div class="user-info d-flex align-items-center mb-3">
         <div class="avatar bg-primary rounded-circle d-flex align-items-center justify-content-center me-2">
-          <span>{{ userInitials }}</span>
+          <span>{{ equipeInitials }}</span>
         </div>
         <div>
-          <p class="mb-0 fw-bold">{{ user.name }}</p>
-          <small>{{ user.role }}</small>
+          <p class="mb-0 fw-bold">{{ equipeData.name_equipe }}</p>
+          <small>EQUIPE</small>
         </div>
       </div>
       <button class="btn btn-danger w-100 d-flex align-items-center justify-content-center" @click="logout">
@@ -68,21 +68,16 @@
 <script>
 export default {
   name: 'Sidebar',
-  props: {
-    user: {
-      type: Object,
-      default: () => ({
-        name: 'John Doe',
-        role: 'Administrator'
-      })
-    }
-  },
   data() {
     return {
       isCollapsed: false,
       isDropdownOpen: {},
+      equipeData: {
+        name_equipe: 'Loading...',
+        email: ''
+      },
       menuItems: [
-        { name: 'Dashboard', icon: 'bi-speedometer2', link: '/' },
+        { name: 'Dashboard', icon: 'bi-speedometer2', link: '/dashboard' },
         { 
           name: 'Examples', 
           icon: 'bi-gear', 
@@ -103,17 +98,27 @@ export default {
         this.isDropdownOpen[index] = false;
       }
     });
+    this.loadEquipeData();
   },
   computed: {
-    userInitials() {
-      return this.user.name
+    equipeInitials() {
+      return this.equipeData.name_equipe
         .split(' ')
-        .map(name => name.charAt(0))
+        .map(part => part.charAt(0))
         .join('')
-        .toUpperCase();
+        .toUpperCase()
+        .slice(0, 2); // Limit to 2 characters
     }
   },
   methods: {
+    loadEquipeData() {
+      const storedEquipeData = localStorage.getItem('equipeData');
+      if (storedEquipeData) {
+        this.equipeData = JSON.parse(storedEquipeData);
+      } else {
+        this.$router.push('/login');
+      }
+    },
     toggleSidebar() {
       this.isCollapsed = !this.isCollapsed;
       this.$emit('sidebar-toggle', this.isCollapsed);
@@ -124,9 +129,9 @@ export default {
     logout() {
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('token');
-      localStorage.removeItem('adminData');
-
-      this.$router.push('/login'); 
+      localStorage.removeItem('equipeData');
+      localStorage.removeItem('userEmail');
+      this.$router.push('/login');
     }
   }
 }
@@ -139,10 +144,10 @@ export default {
   height: 100vh;
   width: 250px;
   transition: all 0.3s ease;
-  position: fixed; /* Keeps sidebar fixed on the left */
+  position: fixed;
   top: 0;
   left: 0;
-  z-index: 1000; /* Ensures it stays above other content */
+  z-index: 1000;
 }
 
 .sidebar.collapsed {
@@ -189,7 +194,6 @@ export default {
   font-weight: bold;
 }
 
-/* Enhanced logout button styles */
 .btn-danger {
   transition: background-color 0.3s ease, transform 0.2s ease;
   padding: 0.5rem 1rem;
@@ -197,15 +201,14 @@ export default {
 }
 
 .btn-danger:hover {
-  background-color: #c82333; /* Slightly darker red on hover */
-  transform: translateY(-1px); /* Subtle lift effect */
+  background-color: #c82333;
+  transform: translateY(-1px);
 }
 
 .btn-danger:active {
-  transform: translateY(0); /* Reset on click */
+  transform: translateY(0);
 }
 
-/* Adjustments for collapsed state */
 .sidebar.collapsed .sidebar-footer {
   display: flex;
   justify-content: center;
@@ -216,9 +219,8 @@ export default {
   padding: 0.5rem;
 }
 
-/* Ensure sidebar-menu takes remaining space */
 .sidebar-menu {
   flex-grow: 1;
-  overflow-y: auto; /* Allows scrolling if menu items exceed height */
+  overflow-y: auto;
 }
 </style>

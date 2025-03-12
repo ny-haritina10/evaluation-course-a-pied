@@ -23,25 +23,6 @@
             </div>
           </div>
         </div>
-        
-        <div class="col-auto d-flex align-items-center">
-          <div class="header-actions d-flex align-items-center">
-            <div class="dropdown ms-2">
-              <button class="btn dropdown-toggle d-flex align-items-center" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                <div class="avatar bg-primary rounded-circle d-flex align-items-center justify-content-center me-2">
-                  <span>{{ userInitials }}</span>
-                </div>
-                <span class="d-none d-md-inline">{{ user.name }}</span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
-                <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </header>
