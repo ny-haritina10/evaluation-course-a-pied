@@ -11,13 +11,13 @@ INSERT INTO categorie (id, label) VALUES (5, 'Mixte');
 
 /* EQUIPES ################################################### */
 INSERT INTO equipes (id, name_equipe, email, password_equipe)
-VALUES (1, 'Equipe A', 'equipeA@gmail.com', 'equipeA');
+VALUES (1, 'Equipe A', 'equipeA@gmail.com', 'equipeA'); -- needs hashage
 
 INSERT INTO equipes (id, name_equipe, email, password_equipe)
-VALUES (2, 'Equipe B', 'equipeB@gmail.com', 'equipeB');
+VALUES (2, 'Equipe B', 'equipeB@gmail.com', 'equipeB'); -- needs hashage
 
 INSERT INTO equipes (id, name_equipe, email, password_equipe)
-VALUES (3, 'Equipe C', 'equipeC@gmail.com', 'equipeC');
+VALUES (3, 'Equipe C', 'equipeC@gmail.com', 'equipeC'); -- needs hashage
 
 
 /* COUREURS ################################################### */
