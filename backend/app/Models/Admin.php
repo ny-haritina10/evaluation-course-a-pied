@@ -14,11 +14,9 @@ class Admin extends Authenticatable
         'password_admin',
     ];
 
-    protected $hidden = [
-        'password_admin',
-    ];
+    protected $hidden = ['password_admin'];
 
-    public function getAuthPassword()
+    public function getAuthPassword(): mixed
     {
         return $this->password_admin;
     }

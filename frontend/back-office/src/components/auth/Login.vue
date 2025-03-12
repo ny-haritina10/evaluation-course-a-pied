@@ -4,7 +4,7 @@
       <div class="col-md-6">
         <div class="card shadow">
           <div class="card-body p-5">
-            <h2 class="text-center mb-4">Login</h2>
+            <h2 class="text-center mb-4">Back Office Login</h2>
             
             <div v-if="errorMessage" class="alert alert-danger">
               {{ errorMessage }}
@@ -57,10 +57,6 @@
                 <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
                 Login
               </button>
-              
-              <div class="text-center">
-                <p>Don't have an account? <router-link to="/signup">Sign up</router-link></p>
-              </div>
             </form>
           </div>
         </div>
