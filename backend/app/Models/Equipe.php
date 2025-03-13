@@ -25,4 +25,9 @@ class Equipe extends Authenticatable
     {
         return $this->password_equipe;
     }
+
+    public function coureurs()
+    {
+        return $this->hasMany(Coureur::class, 'id_equipe');
+    }
 }

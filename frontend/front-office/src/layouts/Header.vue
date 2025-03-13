@@ -31,15 +31,6 @@
 <script>
 export default {
   name: 'Header',
-  props: {
-    user: {
-      type: Object,
-      default: () => ({
-        name: 'John Doe',
-        role: 'Administrator'
-      })
-    }
-  },
   computed: {
     userInitials() {
       return this.user.name
