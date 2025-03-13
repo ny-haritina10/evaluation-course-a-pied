@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AdminLoginController;
 use App\Http\Controllers\Api\EquipeLoginController;
 use App\Http\Controllers\Api\DatabaseResetController;
+use App\Http\Controllers\Api\CourseEtapeController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +28,5 @@ Route::post('/admin/login', [AdminLoginController::class, 'login']);
 Route::post('/equipe/login', [EquipeLoginController::class, 'login']);
 
 Route::delete('/reset-database', [DatabaseResetController::class, 'reset']);
+
+Route::get('/courses/etapes', [CourseEtapeController::class, 'index']);
