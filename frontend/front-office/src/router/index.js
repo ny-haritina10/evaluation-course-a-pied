@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import Dashboard from '../pages/Dashboard.vue';
 import Login from '../components/auth/Login.vue';
-
+import CourseEtape from '../pages/CourseEtape.vue';
 
 const routes = [
   { 
@@ -23,6 +23,12 @@ const routes = [
     component: Dashboard,
     meta: { requiresAuth: true }
   },
+  {
+    path: '/course_etape',
+    name: 'CourseEtape',
+    component: CourseEtape,
+    meta: { requireAuth: true }
+  }
 ];
 
 const requireAuth = (to, from, next) => {

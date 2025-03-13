@@ -77,17 +77,17 @@ export default {
       },
       menuItems: [
         { name: 'Dashboard', icon: 'bi-speedometer2', link: '/' },
-        { 
-          name: 'Examples', 
-          icon: 'bi-gear', 
-          link: '#', 
-          submenu: [
-            { name: 'Form', link: '/examples/static/form' },
-            { name: 'List', link: '/examples/static/list' },
-            { name: 'List Reservation', link: '/examples/api/list-reservation' },
-            { name: 'Form Reservation', link: '/examples/api/form-reservation' }
-          ]
-        }
+        // { 
+        //   name: 'Examples', 
+        //   icon: 'bi-gear', 
+        //   link: '#', 
+        //   submenu: [
+        //     { name: 'Form', link: '/examples/static/form' },
+        //     { name: 'List', link: '/examples/static/list' },
+        //     { name: 'List Reservation', link: '/examples/api/list-reservation' },
+        //     { name: 'Form Reservation', link: '/examples/api/form-reservation' }
+        //   ]
+        // }
       ]
     }
   },

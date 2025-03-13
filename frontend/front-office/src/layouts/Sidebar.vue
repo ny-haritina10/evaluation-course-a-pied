@@ -78,6 +78,7 @@ export default {
       },
       menuItems: [
         { name: 'Dashboard', icon: 'bi-speedometer2', link: '/dashboard' },
+        { name: 'CourseEtape', icon: 'bi-gear', link: '/course_etape' },
         { 
           name: 'Examples', 
           icon: 'bi-gear', 
