@@ -64,6 +64,14 @@
                         >
                           View Details
                         </button>
+                        <button 
+                          class="btn btn-outline-success btn-sm"
+                          @click="openAssignModal(etape)"
+                          data-bs-toggle="modal" 
+                          data-bs-target="#assignCoureursModal"
+                        >
+                          Assign Coureurs
+                        </button>
                       </td>
                     </tr>
                   </tbody>
@@ -172,16 +180,64 @@
           </div>
         </div>
       </div>
+
+      <!-- Modal for Assigning Coureurs -->
+      <div class="modal fade" id="assignCoureursModal" tabindex="-1" aria-labelledby="assignCoureursModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+              <h5 class="modal-title" id="assignCoureursModalLabel">
+                Assign Coureurs to {{ assignEtape ? assignEtape.label : 'Stage' }}
+              </h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div v-if="assignLoading" class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+              <div v-else-if="assignError" class="alert alert-danger">
+                {{ assignError }}
+              </div>
+              <form v-else @submit.prevent="assignCoureurs">
+                <div class="mb-3">
+                  <label class="form-label">Select Coureurs:</label>
+                  <div v-if="coureurs.length === 0" class="text-muted">
+                    No coureurs available for your equipe.
+                  </div>
+                  <div v-else class="form-check" v-for="coureur in coureurs" :key="coureur.id">
+                    <input 
+                      class="form-check-input" 
+                      type="checkbox" 
+                      :value="coureur.id" 
+                      v-model="selectedCoureurIds"
+                      :id="'coureur-' + coureur.id"
+                    >
+                    <label class="form-check-label" :for="'coureur-' + coureur.id">
+                      {{ coureur.name_coureur }}
+                    </label>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary" :disabled="selectedCoureurIds.length === 0">
+                    Assign Selected
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-
 import api from '@/api/axiosInstance';
 
 export default {
-
   name: 'CourseEtapesViewer',
   data() {
     return {
@@ -190,11 +246,16 @@ export default {
       error: null,
       expandedCourses: [],
       selectedEtape: null,
-      
-      // Pagination
       currentPage: 1,
       coursesPerPage: 1,
-    }
+
+      // Assign Modal Data
+      assignEtape: null,
+      coureurs: [],
+      selectedCoureurIds: [],
+      assignLoading: false,
+      assignError: null,
+    };
   },
   computed: {
     totalPages() {
@@ -207,7 +268,7 @@ export default {
     },
     pagesArray() {
       return Array.from({ length: this.totalPages }, (_, i) => i + 1);
-    }
+    },
   },
   methods: {
     async fetchData() {
@@ -216,14 +277,10 @@ export default {
 
       try {
         const response = await api.get('/equipe/courses/etapes');
-        
-        // Axios puts the response data in response.data
         const data = response.data;
 
         if (data.status === 'success') {
           this.courses = data.data;
-          
-          // Auto-expand first course if available
           if (this.courses.length > 0) {
             this.expandedCourses = [this.courses[0].id];
           }
@@ -247,21 +304,83 @@ export default {
     },
     viewEtapeDetails(etape) {
       this.selectedEtape = etape;
-      console.log('etapes: ', etape)
+    },
+    async openAssignModal(etape) {
+      this.assignEtape = etape;
+      this.selectedCoureurIds = [];
+      this.assignError = null;
+      this.assignLoading = true;
+
+      try {
+        const response = await api.get('/equipe/coureurs');
+        const data = response.data;
+
+        if (data.status === 'success') {
+          this.coureurs = data.data;
+        } else {
+          throw new Error(data.message || 'Failed to fetch coureurs');
+        }
+      } catch (err) {
+        this.assignError = `Error loading coureurs: ${err.response?.data?.message || err.message}`;
+        console.error(err);
+      } finally {
+        this.assignLoading = false;
+      }
+    },
+    async assignCoureurs() {
+      this.assignLoading = true;
+      this.assignError = null;
+
+      try {
+        const response = await api.post('/equipe/coureurs/assign', {
+          coureur_ids: this.selectedCoureurIds,
+          etape_id: this.assignEtape.id,
+        });
+        const data = response.data;
+
+        if (data.status === 'success') {
+          // Create a direct reference to the modal element
+          const modalElement = document.getElementById('assignCoureursModal');
+          
+          // Remove both the modal and backdrop manually
+          document.querySelectorAll('.modal-backdrop').forEach(element => {
+            element.classList.remove('show');
+            element.classList.remove('fade');
+            element.remove();
+          });
+          
+          // Update modal properties and remove classes
+          if (modalElement) {
+            modalElement.classList.remove('show');
+            modalElement.style.display = 'none';
+            modalElement.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+          }
+          
+          await this.fetchData();
+        } else {
+          throw new Error(data.message || 'Failed to assign coureurs');
+        }
+      } catch (err) {
+        this.assignError = `Error assigning coureurs: ${err.response?.data?.message || err.message}`;
+        console.error(err);
+      } finally {
+        this.assignLoading = false;
+      }
     },
     formatDate(dateString) {
       if (!dateString) return 'N/A';
-      
       const date = new Date(dateString);
       return new Intl.DateTimeFormat('en-GB', {
         day: '2-digit',
         month: '2-digit',
-        year: 'numeric'
+        year: 'numeric',
       }).format(date);
     },
     formatTime(timeString) {
       if (!timeString) return 'N/A';
-      
       const timeParts = timeString.split(':');
       return `${timeParts[0]}:${timeParts[1]}`;
     },
@@ -270,12 +389,12 @@ export default {
         this.currentPage = page;
         window.scrollTo(0, 0);
       }
-    }
+    },
   },
   mounted() {
     this.fetchData();
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -297,5 +416,9 @@ export default {
 
 .card-header {
   font-weight: bold;
+}
+
+.form-check {
+  margin-bottom: 0.5rem;
 }
 </style>
