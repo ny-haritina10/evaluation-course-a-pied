@@ -8,14 +8,14 @@ use App\Models\Etape;
 
 class CoureurEtapeService
 {
-    public function assignCoureurToEtape(Equipe $equipe, int $coureurId, int $etapeId): array
+    public function assignCoureurToEtape(Equipe $equipe, array $coureurIds, int $etapeId): array
     {
-        $coureur = Coureur::where('id', $coureurId)
+        $coureurs = Coureur::whereIn('id', $coureurIds)
             ->where('id_equipe', $equipe->id)
-            ->first();
+            ->get();
 
-        if (!$coureur) {
-            throw new \Exception('Coureur not found or does not belong to your equipe');
+        if ($coureurs->count() !== count($coureurIds)) {
+            throw new \Exception('One or more coureurs not found or do not belong to your equipe');
         }
 
         $etape = Etape::find($etapeId);
@@ -23,21 +23,41 @@ class CoureurEtapeService
             throw new \Exception('Etape not found');
         }
 
-        if ($coureur->etapes()->where('id_etape', $etapeId)->exists()) {
-            throw new \Exception('Coureur is already assigned to this etape');
+        $currentCoureurCount = $etape->coureurs()->count();
+        $newCoureurCount = $coureurs->count();
+        $maxCoureurAllowed = $etape->nbr_coureur;
+
+        $availableSlots = $maxCoureurAllowed - $currentCoureurCount;
+
+        if ($newCoureurCount > $availableSlots) {
+            throw new \Exception(
+                "Cannot assign $newCoureurCount coureurs. Only $availableSlots slots available out of $maxCoureurAllowed for this etape."
+            );
         }
 
-        $coureur->etapes()->attach($etapeId);
+        $existingAssignments = $coureurs->pluck('id')->intersect(
+            $etape->coureurs()->pluck('coureurs.id')
+        );
 
-        return [
-            'coureur' => [
-                'id' => $coureur->id,
-                'name' => $coureur->name_coureur,
-            ],
+        if ($existingAssignments->isNotEmpty()) {
+            throw new \Exception('One or more coureurs are already assigned to this etape: ' . $existingAssignments->implode(', '));
+        }
+
+        $etape->coureurs()->attach($coureurIds);
+
+        $result = [
+            'coureurs' => $coureurs->map(function ($coureur) {
+                return [
+                    'id' => $coureur->id,
+                    'name' => $coureur->name_coureur,
+                ];
+            })->all(),
             'etape' => [
                 'id' => $etape->id,
                 'label' => $etape->label,
             ]
         ];
+
+        return $result;
     }
 }

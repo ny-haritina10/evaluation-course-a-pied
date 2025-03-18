@@ -19,7 +19,8 @@ class CoureurEtapeController extends Controller
     public function assignCoureurToEtape(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'coureur_id' => 'required|exists:coureurs,id',
+            'coureur_ids' => 'required|array|min:1', 
+            'coureur_ids.*' => 'required|exists:coureurs,id', 
             'etape_id' => 'required|exists:etapes,id',
         ]);
 
@@ -34,13 +35,13 @@ class CoureurEtapeController extends Controller
         try {
             $result = $this->coureurEtapeService->assignCoureurToEtape(
                 $request->user(), // Authenticated equipe
-                $request->coureur_id,
+                $request->coureur_ids, 
                 $request->etape_id
             );
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Coureur assigned to etape successfully',
+                'message' => 'Coureurs assigned to etape successfully',
                 'data' => $result
             ], 200);
         } catch (\Exception $e) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Services\CoureurService;
 
@@ -15,7 +16,7 @@ class CoureurController extends Controller
         $this->coureurService = $coureurService;
     }
 
-    public function getEquipeCoureurs(Request $request)
+    public function getEquipeCoureurs(Request $request): JsonResponse
     {
         try {
             $coureurs = $this->coureurService->getEquipeCoureurs($request->user());

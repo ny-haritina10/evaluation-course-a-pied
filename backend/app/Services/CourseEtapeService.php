@@ -13,13 +13,7 @@ class CourseEtapeService
             $courses = Course::with([
                 'etapes' => function ($query) {
                     $query->with([
-                        'rangPoints',
-                        'coureurs' => function ($query) {
-                            $query->with([
-                                'temps', 
-                                'coureur' 
-                            ]);
-                        }
+                        'rangPoints'
                     ]);
                 }
             ])->get();

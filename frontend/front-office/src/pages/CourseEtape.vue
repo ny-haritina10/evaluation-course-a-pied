@@ -152,12 +152,14 @@
                       <tr>
                         <th>ID</th>
                         <th>Name</th>
+                        <th>Dossard</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr v-for="coureur in selectedEtape.coureurs" :key="coureur.id">
                         <td>{{ coureur.id }}</td>
-                        <td>{{ coureur.name }}</td>
+                        <td>{{ coureur.coureur.name_coureur }}</td>
+                        <td>{{ coureur.coureur.numero_dossard }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -245,6 +247,7 @@ export default {
     },
     viewEtapeDetails(etape) {
       this.selectedEtape = etape;
+      console.log('etapes: ', etape)
     },
     formatDate(dateString) {
       if (!dateString) return 'N/A';
