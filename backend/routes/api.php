@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\EquipeLoginController;
 use App\Http\Controllers\Api\DatabaseResetController;
 use App\Http\Controllers\Api\CourseEtapeController;
 use App\Http\Controllers\Api\CoureurEtapeController;
+use App\Http\Controllers\Api\CoureurController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,4 +33,5 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin.role'])->group(functi
 Route::prefix('equipe')->middleware(['auth:sanctum', 'equipe.role'])->group(function () {
     Route::get('/courses/etapes', [CourseEtapeController::class, 'index']);
     Route::post('/coureurs/assign', [CoureurEtapeController::class, 'assignCoureurToEtape']);
+    Route::get('/coureurs', [CoureurController::class, 'getEquipeCoureurs']);
 });
