@@ -176,6 +176,8 @@
 
 <script>
 
+import api from '@/api/axiosInstance';
+
 export default {
 
   name: 'CourseEtapesViewer',
@@ -209,16 +211,13 @@ export default {
     async fetchData() {
       this.loading = true;
       this.error = null;
-      
+
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/courses/etapes');
+        const response = await api.get('/equipe/courses/etapes');
         
-        if (!response.ok) {
-          throw new Error(`API responded with status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
+        // Axios puts the response data in response.data
+        const data = response.data;
+
         if (data.status === 'success') {
           this.courses = data.data;
           
@@ -230,7 +229,8 @@ export default {
           throw new Error(data.message || 'Failed to fetch data');
         }
       } catch (err) {
-        this.error = `Error loading data: ${err.message}`;
+        const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
+        this.error = `Error loading data: ${errorMessage}`;
         console.error(err);
       } finally {
         this.loading = false;
