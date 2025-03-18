@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AdminLoginController;
 use App\Http\Controllers\Api\EquipeLoginController;
 use App\Http\Controllers\Api\DatabaseResetController;
 use App\Http\Controllers\Api\CourseEtapeController;
+use App\Http\Controllers\Api\CoureurEtapeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,4 +31,5 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin.role'])->group(functi
 // Equipe protected routes
 Route::prefix('equipe')->middleware(['auth:sanctum', 'equipe.role'])->group(function () {
     Route::get('/courses/etapes', [CourseEtapeController::class, 'index']);
+    Route::post('/coureurs/assign', [CoureurEtapeController::class, 'assignCoureurToEtape']);
 });
