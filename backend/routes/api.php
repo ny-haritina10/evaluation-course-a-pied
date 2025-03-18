@@ -8,25 +8,26 @@ use App\Http\Controllers\Api\EquipeLoginController;
 use App\Http\Controllers\Api\DatabaseResetController;
 use App\Http\Controllers\Api\CourseEtapeController;
 
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Public routes
 Route::post('/admin/login', [AdminLoginController::class, 'login']);
 Route::post('/equipe/login', [EquipeLoginController::class, 'login']);
 
-Route::delete('/reset-database', [DatabaseResetController::class, 'reset']);
+// Admin protected routes
+Route::prefix('admin')->middleware(['auth:sanctum', 'admin.role'])->group(function () {
+    Route::delete('/reset-database', [DatabaseResetController::class, 'reset']);
+});
 
-Route::get('/courses/etapes', [CourseEtapeController::class, 'index']);
+// Equipe protected routes
+Route::prefix('equipe')->middleware(['auth:sanctum', 'equipe.role'])->group(function () {
+    Route::get('/courses/etapes', [CourseEtapeController::class, 'index']);
+});

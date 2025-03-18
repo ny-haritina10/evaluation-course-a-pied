@@ -18,13 +18,11 @@ class EquipeLoginController extends Controller
 
     public function login(Request $request)
     {
-        // Define validation rules
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string|min:6',
         ]);
 
-        // Check if validation fails
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
@@ -34,7 +32,6 @@ class EquipeLoginController extends Controller
         }
 
         try {
-            // Attempt login through service
             $result = $this->equipeAuthService->login(
                 $request->email,
                 $request->password
